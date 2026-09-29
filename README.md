@@ -26,27 +26,31 @@ I tested the resiliency of the architecture by manually terminating an EC2 insta
 
 The application is deployed in the AWS `us-west-2` (Oregon) region across multiple Availability Zones.
 
+![AWS Cloud Resilience Architecture](screenshots/architecture-diagram.png)
+
+### Traffic Flow
+
 ```text
-                    Internet
-                       |
-                       | HTTP : 80
-                       v
-            Application Load Balancer
-                       |
-                       v
-                  Target Group
-                       |
-             +---------+---------+
-             |                   |
-             v                   v
-       EC2 Instance         EC2 Instance
-        us-west-2a           us-west-2b
-             |                   |
-             +---------+---------+
-                       |
-                       v
-              Auto Scaling Group
-              Min: 2 | Max: 4
+                   Internet
+                      |
+                      | HTTP : 80
+                      v
+           Application Load Balancer
+                      |
+                      v
+                 Target Group
+                      |
+            +---------+---------+
+            |                   |
+            v                   v
+      EC2 Instance         EC2 Instance
+       us-west-2a           us-west-2b
+            |                   |
+            +---------+---------+
+                      |
+                      v
+             Auto Scaling Group
+       Min: 2 | Desired: 2 | Max: 4
 ```
 
 The Application Load Balancer receives incoming requests and distributes them across healthy EC2 instances in separate Availability Zones.
@@ -143,7 +147,7 @@ The configuration included:
 
 - The Application Load Balancer accepts HTTP traffic on port 80.
 - EC2 web servers accept HTTP traffic from the Application Load Balancer security group.
-- SSH access is restricted to an authorized IP address.
+- SSH access on port 22 is restricted to an authorized administrator IP address.
 - Security group rules limit unnecessary direct access to the web servers.
 
 This creates separation between the public-facing load balancer and the backend EC2 instances.
